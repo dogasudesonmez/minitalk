@@ -6,12 +6,11 @@
 /*   By: dsonmez <dsonmez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 00:12:31 by dsonmez           #+#    #+#             */
-/*   Updated: 2025/02/09 01:15:47 by dsonmez          ###   ########.fr       */
+/*   Updated: 2025/02/09 01:30:13 by dsonmez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
-#include <stdlib.h>
 #include "./libft/libft.h"
 #include <unistd.h>
 #include "./printf/ft_printf.h"

@@ -6,14 +6,12 @@
 /*   By: dsonmez <dsonmez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 00:12:19 by dsonmez           #+#    #+#             */
-/*   Updated: 2025/02/09 01:00:41 by dsonmez          ###   ########.fr       */
+/*   Updated: 2025/02/09 01:28:31 by dsonmez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
 #include "./printf/ft_printf.h"
 
 void	signal_handler(int signalnum, siginfo_t *info, void *context)
@@ -37,7 +35,7 @@ void	signal_handler(int signalnum, siginfo_t *info, void *context)
 	kill(info->si_pid, SIGUSR1);
 }
 
-int	main(int argc, char **argv)
+int	main(void)
 {
 	struct sigaction	sa;
 	int					pid;
