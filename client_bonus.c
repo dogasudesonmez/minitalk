@@ -1,43 +1,80 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dsonmez <dsonmez@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/09 00:12:40 by dsonmez           #+#    #+#             */
+/*   Updated: 2025/02/09 01:15:25 by dsonmez          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <signal.h>
 #include <stdlib.h>
 #include "./libft/libft.h"
 #include <unistd.h>
+#include "./printf/ft_printf.h"
 
-void send_char(int server_pid, char c)
+static int	g_ack_received = 0;
+
+void	ack_handler(int signo)
 {
-	int i;
-
-	i = 0;
-    while (i < 8) {
-        if (c & (1 << i))
-			kill(server_pid, SIGUSR1);
-        else
-			kill(server_pid, SIGUSR2);
-		usleep(100);
-		i++;
-    }
+	(void)signo;
+	g_ack_received = 1;
+	ft_printf("Sinyal alındı.");
 }
 
-void message_put(int server_pid,char *str)
+void	send_signal_to_server(int server_pid, int signal)
 {
-    int i ;
+	kill(server_pid, signal);
+}
 
-    i = 0;
-    while(str[i] != '\0')
-    {
-        send_char(server_pid,str[i]);
-        i++;
-    }
+void	send_char(int server_pid, char c)
+{
+	struct sigaction	sa;
+	int					i;
+
+	i = 0;
+	sa.sa_handler = ack_handler;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR1, &sa, NULL);
+	while (i < 8)
+	{
+		g_ack_received = 0;
+		if (c & (1 << i))
+			send_signal_to_server(server_pid, SIGUSR1);
+		else
+			send_signal_to_server(server_pid, SIGUSR2);
+		while (!g_ack_received)
+			pause();
+		i++;
+	}
+}
+
+void	send_message(int server_pid, char *message)
+{
+	int	i;
+
+	i = 0;
+	while (message[i] != '\0')
+	{
+		send_char(server_pid, message[i]);
+		i++;
+	}
 	send_char(server_pid, '\0');
 }
 
-int main(int ac, char **av)
+int	main(int argc, char **argv)
 {
-	if((ac != 3))
-		return(1);
-		
-	int server_pid = ft_atoi(av[1]);
-	char *message = av[2];
-	
-    message_put(server_pid,message);
+	int		server_pid;
+	char	*message;
+
+	if (argc != 3)
+		return (1);
+	server_pid = ft_atoi(argv[1]);
+	message = argv[2];
+	send_message(server_pid, message);
+	return (0);
 }

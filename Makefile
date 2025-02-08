@@ -4,7 +4,11 @@ NAME_BONUS_C = client_bonus
 NAME_BONUS_S = server_bonus
 SOURCES_C = client.c
 SOURCES_S = server.c
-LIBFT = libft.a
+
+LIBFT_DIR = libft
+PRINTF_DIR = printf
+LIBFT = $(LIBFT_DIR)/libft.a
+PRINTF = $(PRINTF_DIR)/libftprintf.a
 
 BSOURCES_C = client_bonus.c
 BSOURCES_S = server_bonus.c
@@ -18,27 +22,38 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
 
-all: $(NAME_C) $(NAME_S)
+all:  $(LIBFT) $(PRINTF) $(NAME_C) $(NAME_S)
+
+$(LIBFT):
+	make -C $(LIBFT_DIR)
+
+$(PRINTF):
+	make -C $(PRINTF_DIR)
 
 $(NAME_C): $(OBJECTS_C)
-	$(CC) $(CFLAGS) $(OBJECTS_C) ./libft/$(LIBFT) -o $(NAME_C)
+	$(CC) $(CFLAGS) $(OBJECTS_C) $(LIBFT) $(PRINTF) -o $(NAME_C)
 
 $(NAME_S): $(OBJECTS_S)
-	$(CC) $(CFLAGS)  $(OBJECTS_S) -o $(NAME_S)
+	$(CC) $(CFLAGS)  $(OBJECTS_S) $(PRINTF) -o $(NAME_S)
+
 clean:
 	rm -f $(OBJECTS_C) $(BOBJECTS_C) $(OBJECTS_S) $(BOBJECTS_S)
+	make clean -C $(LIBFT_DIR)
+	make clean -C $(PRINTF_DIR)
 
 fclean: clean
 	rm -f $(NAME_C) $(NAME_S) $(NAME_BONUS_S) $(NAME_BONUS_C)
+	make fclean -C $(LIBFT_DIR)
+	make fclean -C $(PRINTF_DIR)
 
-bonus: all $(BOBJECTS_C) $(BOBJECTS_S)
+bonus: $(NAME_BONUS_S) $(NAME_BONUS_C) $(BOBJECTS_C) $(BOBJECTS_S)
 
 $(NAME_BONUS_C): $(BOBJECTS_C)
-	$(CC) $(CFLAGS) $(NAME_BONUS_C) $(BOBJECTS_C) ./libft/$(LIBFT)
+	$(CC) $(CFLAGS) $(BOBJECTS_C) $(LIBFT) $(PRINTF) -o $(NAME_BONUS_C)
 
 $(NAME_BONUS_S): $(BOBJECTS_S)
-	$(CC) $(CFLAGS) $(NAME_BONUS_S) $(BOBJECTS_S)
+	$(CC) $(CFLAGS) $(BOBJECTS_S) $(PRINTF) -o $(NAME_BONUS_S)
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus bonus
+.PHONY: all clean fclean re bonus
